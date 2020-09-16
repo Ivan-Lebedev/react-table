@@ -5,7 +5,7 @@ export default props => {
     const [value, setValue] = useState('')
 
     const valueChangeHandler = e => {
-        setValue(e.target.value)
+        setValue(e.target.value.trim())
     }
     const onFormSubmit = e => {
         e.preventDefault()
