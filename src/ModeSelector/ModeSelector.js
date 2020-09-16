@@ -8,8 +8,8 @@ export default props => {
 
     return (
         <div style={{display: 'flex', justifyContent: 'center', padding: '50px'}}>
-            <button onClick={() => props.onSelect(smallUrl)} className="btn btn-success">32 элемента</button>
-            <button onClick={() => props.onSelect(bigUrl)} className="btn btn-danger">1000 элементов</button>
+            <button onClick={() => props.onSelect(smallUrl)} className="btn btn-success">32 users</button>
+            <button onClick={() => props.onSelect(bigUrl)} className="btn btn-danger">1000 users</button>
         </div>
     )
 }
