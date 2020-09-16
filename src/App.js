@@ -6,6 +6,7 @@ import ModeSelector from './ModeSelector/ModeSelector'
 import ReactPaginate from 'react-paginate'
 import TableSearch from './TableSearch/TableSearch'
 import _ from 'lodash'
+import AddingForm from './AddingForm/AddingForm'
 
 class App extends Component {
 
@@ -71,9 +72,15 @@ class App extends Component {
     }
     return data.filter(item => {
       return item['firstName'].toLowerCase().includes(search.toLowerCase())
-      || item['lastName'].toLowerCase().includes(search.toLowerCase())
-      || item['email'].toLowerCase().includes(search.toLowerCase())
+        || item['lastName'].toLowerCase().includes(search.toLowerCase())
+        || item['email'].toLowerCase().includes(search.toLowerCase())
     })
+  }
+
+  addNewUserToTable = (id, firstName, lastName, email, phone) => {
+    const oldData = this.state.data
+    const newData = {id, firstName, lastName, email, phone}
+    this.setState({data: [newData, ...oldData]})
   }
 
   render() {
@@ -81,7 +88,7 @@ class App extends Component {
     const filteredData = this.getFilteredData()
     const pageCount = Math.ceil(filteredData.length / pageSize)
     const displayData = _.chunk(filteredData, pageSize)[this.state.currentPage]
-    
+
 
     if (!this.state.isModeSelected) {
       return (
@@ -99,6 +106,8 @@ class App extends Component {
             : <>
               <TableSearch
                 onSearch={this.searchHandler} />
+              <AddingForm
+                addNewUserToTable={this.addNewUserToTable} />
               <Table
                 data={displayData}
                 onSort={this.onSort}

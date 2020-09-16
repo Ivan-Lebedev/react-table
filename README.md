@@ -1,3 +1,5 @@
+## This is my react-table learning project based on [This test-task](https://github.com/fugr-ru/frontend-javascript-test)
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
