@@ -20,7 +20,15 @@ export default props => {
             setEmail('')
             setPhone('')
         }
+    }
 
+    const cancelNewUserData = () => {
+        setOpenPanel(true)
+        setId('')
+        setFirstName('')
+        setLastName('')
+        setEmail('')
+        setPhone('')
     }
 
     const addNewPersonBtn = <button
@@ -77,6 +85,12 @@ export default props => {
             </tbody>
         </table>
         <button type="submit" className="btn btn-primary mb-3">Add Persone</button>
+        <button
+            type="button"
+            className="btn btn-danger mb-3 ml-3"
+            onClick={() => cancelNewUserData()}>
+            Cancel
+                </button>
     </form>
 
     const AddingFormContent = openPanel
