@@ -2,20 +2,24 @@ import React, { Component } from 'react'
 import Loader from './Loader/Loader'
 import Table from './Table/Table'
 import DetailRowView from './DetailRowView/DetailRowView'
+import ModeSelector from './ModeSelector/ModeSelector'
 import _ from 'lodash'
+import ReactPaginate from 'react-paginate'
 
 class App extends Component {
 
   state = {
-    isLoading: true,
+    isModeSelected: false,
+    isLoading: false,
     data: [],
     sort: 'asc', // desc
     sortField: 'id',
-    row: null
+    row: null,
+    currentPage: 0
   }
 
-  async componentDidMount() {
-    const response = await fetch(`http://www.filltext.com/?rows=32&id={number|1000}&firstName={firstName}&lastName={lastName}&email={email}&phone={phone|(xxx)xxx-xx-xx}&address={addressObject}&description={lorem|32}`)
+  async fetchData(url) {
+    const response = await fetch(url)
     const data = await response.json()
 
     this.setState({
@@ -26,33 +30,77 @@ class App extends Component {
 
   onSort = (sortField) => {
     const clonedData = this.state.data.concat()
-    const sortType = this.state.sort === 'asc' ? 'desc' : 'asc'
-
-    const orderedData = _.orderBy(clonedData, sortField, sortType)
-
-    this.setState({
-      data: orderedData,
-      sort: sortType,
-      sortField: sortField
-    })
+    const sort = this.state.sort === 'asc' ? 'desc' : 'asc'
+    const data = _.orderBy(clonedData, sortField, sort)
+    this.setState({ data, sort, sortField })
   }
 
   onRowSelect = (row) => {
     this.setState({ row })
   }
 
+  pageChangeHandler = ({selected}) => {
+    this.setState({
+      currentPage: selected
+    })
+  }
+
+  modeSelectHandler = (url) => {
+    this.setState({
+      isModeSelected: true,
+      isLoading: true,
+    })
+
+    this.fetchData(url)
+  }
+
   render() {
+    const pageSize = 50
+    const displayData = _.chunk(this.state.data, pageSize)[this.state.currentPage]
+
+    if (!this.state.isModeSelected) {
+      return (
+        <div className="container">
+          <ModeSelector onSelect={this.modeSelectHandler} />
+        </div>
+      )
+    }
+
     return (
       <div className="container">
         {
           this.state.isLoading
             ? <Loader />
             : <Table
-              data={this.state.data}
+              data={displayData}
               onSort={this.onSort}
               sort={this.state.sort}
               sortField={this.state.sortField}
               onRowSelect={this.onRowSelect} />
+        }
+
+        {
+          this.state.data.length > pageSize
+            ? <ReactPaginate
+              previousLabel={'<'}
+              nextLabel={'>'}
+              breakLabel={'...'}
+              breakClassName={'break-me'}
+              pageCount={20}
+              marginPagesDisplayed={2}
+              pageRangeDisplayed={5}
+              onPageChange={this.pageChangeHandler}
+              containerClassName={'pagination'}
+              activeClassName={'active'}
+              pageClassName='page-item'
+              pageLinkClassName='page-link'
+              previousClassName='page-item'
+              previousLinkClassName='page-link'
+              nextClassName='page-item'
+              nextLinkClassName='page-link'
+              forcePage={this.state.currentPage}
+            />
+            : null
         }
 
         {
