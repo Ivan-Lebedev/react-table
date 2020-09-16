@@ -18,8 +18,8 @@ export default props => {
             <input
                 type="text"
                 className="form-control"
-                placeholder="Text for search"
-                aria-label="Text for search"
+                placeholder="Text for search..."
+                aria-label="Text for search..."
                 aria-describedby="button-addon2"
                 value={value}
                 onChange={valueChangeHandler} />
