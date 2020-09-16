@@ -3,8 +3,9 @@ import Loader from './Loader/Loader'
 import Table from './Table/Table'
 import DetailRowView from './DetailRowView/DetailRowView'
 import ModeSelector from './ModeSelector/ModeSelector'
-import _ from 'lodash'
 import ReactPaginate from 'react-paginate'
+import TableSearch from './TableSearch/TableSearch'
+import _ from 'lodash'
 
 class App extends Component {
 
@@ -15,7 +16,8 @@ class App extends Component {
     sort: 'asc', // desc
     sortField: 'id',
     row: null,
-    currentPage: 0
+    currentPage: 0,
+    search: ''
   }
 
   async fetchData(url) {
@@ -39,7 +41,7 @@ class App extends Component {
     this.setState({ row })
   }
 
-  pageChangeHandler = ({selected}) => {
+  pageChangeHandler = ({ selected }) => {
     this.setState({
       currentPage: selected
     })
@@ -54,9 +56,32 @@ class App extends Component {
     this.fetchData(url)
   }
 
+  searchHandler = (search) => {
+    this.setState({
+      search,
+      currentPage: 0
+    })
+  }
+
+  getFilteredData() {
+    const { data, search } = this.state
+
+    if (!search) {
+      return data
+    }
+    return data.filter(item => {
+      return item['firstName'].toLowerCase().includes(search.toLowerCase())
+      || item['lastName'].toLowerCase().includes(search.toLowerCase())
+      || item['email'].toLowerCase().includes(search.toLowerCase())
+    })
+  }
+
   render() {
     const pageSize = 50
-    const displayData = _.chunk(this.state.data, pageSize)[this.state.currentPage]
+    const filteredData = this.getFilteredData()
+    const pageCount = Math.ceil(filteredData.length / pageSize)
+    const displayData = _.chunk(filteredData, pageSize)[this.state.currentPage]
+    
 
     if (!this.state.isModeSelected) {
       return (
@@ -71,12 +96,16 @@ class App extends Component {
         {
           this.state.isLoading
             ? <Loader />
-            : <Table
-              data={displayData}
-              onSort={this.onSort}
-              sort={this.state.sort}
-              sortField={this.state.sortField}
-              onRowSelect={this.onRowSelect} />
+            : <>
+              <TableSearch
+                onSearch={this.searchHandler} />
+              <Table
+                data={displayData}
+                onSort={this.onSort}
+                sort={this.state.sort}
+                sortField={this.state.sortField}
+                onRowSelect={this.onRowSelect} />
+            </>
         }
 
         {
@@ -86,7 +115,7 @@ class App extends Component {
               nextLabel={'>'}
               breakLabel={'...'}
               breakClassName={'break-me'}
-              pageCount={20}
+              pageCount={pageCount}
               marginPagesDisplayed={2}
               pageRangeDisplayed={5}
               onPageChange={this.pageChangeHandler}
